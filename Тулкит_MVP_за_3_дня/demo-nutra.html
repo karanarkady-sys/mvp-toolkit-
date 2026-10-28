@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ЯСНО — подбор формулы</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Демо: квиз-подбор и предзаказ для бренда функциональных добавок. «Лабораторная» светлая тема */
+:root{
+  --bg:#F4F5F7; --card:#FFFFFF; --ink:#13161C; --muted:#667085; --cobalt:#2747D6; --cobalt-t:#E6EBFF; --lime:#C9F05B; --line:#E1E4EA;
+  --sans:"Onest",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace; color-scheme:light;
+}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:22px 40px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:26px}
+.logo{font-weight:800;font-size:24px;letter-spacing:.14em}
+.logo i{font-style:normal;display:inline-block;width:10px;height:10px;background:var(--lime);border-radius:50%;margin-left:4px;vertical-align:middle}
+.lab{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px}
+h1{font-size:clamp(26px,3.4vw,38px);line-height:1.1;margin:0 0 10px;text-wrap:balance}
+.sub{color:var(--muted);margin:0 0 18px}
+.progress{display:flex;gap:6px;margin-bottom:18px}
+.progress span{flex:1;height:6px;border-radius:6px;background:var(--line)}
+.progress span.on{background:var(--cobalt)}
+.qn{font-family:var(--mono);font-size:12px;color:var(--cobalt);font-weight:700;letter-spacing:.06em}
+.q{font-size:20px;font-weight:800;margin:4px 0 14px}
+.opts{display:grid;gap:10px}
+.opt{font:inherit;text-align:left;border:1.5px solid var(--line);background:var(--card);border-radius:14px;padding:14px 16px;cursor:pointer;display:flex;gap:12px;align-items:center;color:var(--ink)}
+.opt:hover{border-color:var(--cobalt)}
+.opt:focus-visible,.btn:focus-visible{outline:3px solid var(--cobalt);outline-offset:2px}
+.opt[aria-pressed="true"]{border-color:var(--cobalt);background:var(--cobalt-t)}
+.opt b{display:block}.opt small{color:var(--muted)}
+.ic{width:38px;height:38px;border-radius:12px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}
+.res{display:flex;flex-direction:column;gap:14px}
+.prod{display:flex;gap:16px;align-items:center}
+.bottle{width:86px;height:120px;border-radius:18px 18px 14px 14px;background:linear-gradient(180deg,var(--ink) 0 22%,var(--cobalt) 22% 100%);position:relative;flex:none}
+.bottle::after{content:attr(data-l);position:absolute;left:8px;right:8px;top:46%;background:var(--lime);border-radius:6px;font-weight:800;font-size:11px;text-align:center;padding:4px 0;color:var(--ink)}
+.prod h2{margin:0;font-size:24px}
+.prod p{margin:2px 0 0;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td{padding:8px 0;border-bottom:1px dashed var(--line)}
+td:last-child{text-align:right;font-family:var(--mono);font-weight:700}
+.how{background:var(--bg);border-radius:12px;padding:12px 14px;font-size:14px}
+.pr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pc{font:inherit;color:inherit;background:var(--card);text-align:left;cursor:pointer;border:1.5px solid var(--line);border-radius:14px;padding:12px}
+.pc.on{border-color:var(--cobalt);background:var(--cobalt-t)}
+.pc b{font-family:var(--mono);font-size:22px;display:block}
+.pc small{color:var(--muted)}
+.btn{appearance:none;border:0;font:inherit;font-weight:800;font-size:16px;background:var(--cobalt);color:#fff;padding:14px 20px;border-radius:14px;cursor:pointer;width:100%}
+.btn.sec{background:transparent;color:var(--cobalt);border:1.5px solid var(--cobalt)}
+.disc{font-size:12px;color:var(--muted)}
+.empty{color:var(--muted);text-align:center;padding:40px 10px}
+.empty b{display:block;color:var(--ink);font-size:18px;margin-bottom:6px}
+.done{background:var(--lime);border-radius:14px;padding:14px;font-weight:800}
+@media (max-width:760px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body><div class="wrap">
+<header><div class="logo">ЯСНО<i></i></div><div class="lab">формулы под задачу · партия №1</div></header>
+<div class="grid">
+  <div class="panel">
+    <h1>Подберите формулу за 30 секунд</h1>
+    <p class="sub">Три вопроса — и мы покажем, что подойдёт именно вам</p>
+    <div class="progress"><span class="on" id="p1"></span><span id="p2"></span><span id="p3"></span></div>
+    <div id="quiz"></div>
+  </div>
+  <div class="panel" id="result" aria-live="polite"></div>
+</div>
+<p class="disc" style="margin-top:18px">Демо-прототип для Стартап Академии СКОЛКОВО. Бренд, составы и цены — условные. БАД, не является лекарственным средством.</p>
+</div>
+<script>
+const Q=[
+ {k:'goal',t:'Какая задача главная?',o:[['focus','🎯','Фокус и концентрация','Работа, учёба, дедлайны'],['energy','⚡','Энергия на тренировке','Силовые, бег, игровые виды'],['sleep','🌙','Восстановление и сон','После нагрузки и долгого дня']]},
+ {k:'time',t:'Когда нужна помощь?',o:[['am','☀️','Утром','Чтобы включиться'],['day','🕑','Днём','После обеда, перед тренировкой'],['pm','🌆','Вечером','Чтобы выключиться']]},
+ {k:'fmt',t:'Какой формат удобнее?',o:[['caps','💊','Капсулы','Просто и без вкуса'],['drink','🥤','Напиток','Порошок в стик-пакете'],['bar','🍫','Батончик','Можно на ходу']]}
+];
+const P={
+ focus:{n:'ЯСНО Фокус',l:'FOCUS',d:'Спокойная концентрация без резкого спада',c:[['L-теанин','200 мг'],['Кофеин','80 мг'],['Витамин B6','2 мг'],['Экстракт бакопы','150 мг']],h:'1 порция утром или до 14:00. Не сочетать с кофе.'},
+ energy:{n:'ЯСНО Старт',l:'START',d:'Энергия и выносливость на тренировке',c:[['Кофеин','100 мг'],['Бета-аланин','1,6 г'],['Электролиты','400 мг'],['Цитруллин','3 г']],h:'За 20–30 минут до тренировки.'},
+ sleep:{n:'ЯСНО Отбой',l:'NIGHT',d:'Восстановление и спокойный вечер',c:[['Магний (бисглицинат)','300 мг'],['Глицин','1 г'],['L-теанин','100 мг'],['Витамин B6','2 мг']],h:'За час до сна.'}
+};
+const base={caps:1490,drink:1690,bar:1890}, fmtName={caps:'капсулы, 30 порций',drink:'напиток, 30 стиков',bar:'батончики, 12 штук'};
+let step=0,ans={},plan='sub';
+const quiz=document.getElementById('quiz'),res=document.getElementById('result');
+function rub(n){return n.toLocaleString('ru-RU')+' ₽';}
+function renderQ(){
+  if(step>=Q.length){quiz.innerHTML='<div class="done">Готово! Ваша формула — справа.</div><p><button class="btn sec" id="again" type="button">Пройти заново</button></p>';document.getElementById('again').onclick=()=>{step=0;ans={};renderQ();renderR();};return;}
+  const q=Q[step];['p1','p2','p3'].forEach((p,i)=>document.getElementById(p).classList.toggle('on',i<=step));
+  quiz.innerHTML='<div class="qn">ВОПРОС '+(step+1)+' ИЗ 3</div><div class="q">'+q.t+'</div><div class="opts">'+q.o.map(o=>'<button class="opt" type="button" data-v="'+o[0]+'"><span class="ic">'+o[1]+'</span><span><b>'+o[2]+'</b><small>'+o[3]+'</small></span></button>').join('')+'</div>';
+  quiz.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ans[q.k]=b.dataset.v;b.setAttribute('aria-pressed','true');step++;setTimeout(()=>{renderQ();renderR();},180);});
+}
+function renderR(){
+  if(!ans.goal){res.innerHTML='<div class="empty"><b>Здесь появится ваша формула</b>Состав в миллиграммах, как принимать и цена — после первого ответа</div>';return;}
+  const p=P[ans.goal],f=ans.fmt||'caps',one=base[f],sub=Math.round(one*0.85/10)*10;
+  res.innerHTML='<div class="res"><div class="prod"><div class="bottle" data-l="'+p.l+'"></div><div><h2>'+p.n+'</h2><p>'+p.d+'</p><p class="lab">'+fmtName[f]+'</p></div></div>'+
+   '<table>'+p.c.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('')+'</table>'+
+   '<div class="how"><b>Как принимать:</b> '+p.h+'</div>'+
+   '<div class="pr"><button type="button" class="pc '+(plan==='one'?'on':'')+'" data-p="one"><small>Разовая покупка</small><b>'+rub(one)+'</b></button><button type="button" class="pc '+(plan==='sub'?'on':'')+'" data-p="sub"><small>Подписка, −15%</small><b>'+rub(sub)+'</b></button></div>'+
+   '<button class="btn" id="pre" type="button">Предзаказ — '+(plan==='sub'?rub(sub)+' в месяц':rub(one))+'</button><div class="disc">Списание только после отправки первой партии. БАД, не является лекарственным средством.</div></div>';
+  res.querySelectorAll('.pc').forEach(b=>b.onclick=()=>{plan=b.dataset.p;renderR();});
+  document.getElementById('pre').onclick=()=>{res.querySelector('.res').insertAdjacentHTML('beforeend','<div class="done">Вы в списке партии №1. Напишем перед отправкой.</div>');document.getElementById('pre').disabled=true;};
+}
+renderQ();renderR();
+</script>
+</body>
+</html>

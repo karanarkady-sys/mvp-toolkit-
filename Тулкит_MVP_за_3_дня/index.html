@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}</style>
+<title>Тулкит «MVP за 3 дня»</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700&family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Верстак фаундера: слева выбор трека, справа «рабочий лист» от А до Я; ниже — промпты и живые демо */
+:root{
+  --bg:#F2F4F3; --surface:#FFFFFF; --ink:#18221E; --muted:#5D6A64; --line:#D8DED9;
+  --green:#2F8A3C; --green-t:#E3F2E5; --orange:#D9651F; --orange-t:#FCE8DA; --navy:#1E2C38; --code:#18221E; --code-fg:#E6EFE9;
+  --display:"Unbounded","Golos Text",system-ui,sans-serif; --body:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121815; --surface:#1A221E; --ink:#E6EDE9; --muted:#9AA8A1; --line:#2B3631;
+  --green:#5CC46C; --green-t:#1F3324; --orange:#F2925A; --orange-t:#3A2518; --navy:#0E1418; --code:#0B100E; --code-fg:#DCE6E0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121815; --surface:#1A221E; --ink:#E6EDE9; --muted:#9AA8A1; --line:#2B3631;
+  --green:#5CC46C; --green-t:#1F3324; --orange:#F2925A; --orange-t:#3A2518; --navy:#0E1418; --code:#0B100E; --code-fg:#DCE6E0; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{padding-block:28px 18px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--green)}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,4vw,44px);line-height:1.1;margin:6px 0 10px;text-wrap:balance}
+.lead{color:var(--muted);max-width:62ch;margin:0}
+nav.jump{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+nav.jump a{color:var(--ink);text-decoration:none;font-weight:600;font-size:14px;border:1px solid var(--line);background:var(--surface);padding:7px 12px;border-radius:999px}
+nav.jump a:hover{border-color:var(--green)}
+section{padding-block:34px}
+h2{font-family:var(--display);font-weight:700;font-size:clamp(20px,2.4vw,28px);margin:0 0 6px;text-wrap:balance}
+.sub{color:var(--muted);margin:0 0 20px;max-width:70ch}
+.ladder{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:8px}
+.rung{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.rung b{font-family:var(--mono);color:var(--green);font-size:13px}
+.rung div{font-weight:600;font-size:14px;line-height:1.3;margin-top:4px}
+.rung small{color:var(--muted);font-size:12px}
+.bench{display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:start}
+.tracks{display:flex;flex-direction:column;gap:8px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+.tracks button{font:inherit;text-align:left;cursor:pointer;background:var(--surface);color:var(--ink);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px}
+.tracks button b{display:block;font-size:15px}
+.tracks button small{color:var(--muted);font-size:12.5px}
+.tracks button[aria-selected="true"]{border-color:var(--green);background:var(--green-t)}
+.tracks button:focus-visible,.copy:focus-visible,.demo a:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;min-width:0}
+.sheet h3{font-family:var(--display);font-size:20px;margin:0 0 4px}
+.sheet .who{color:var(--muted);font-size:14px;margin:0 0 16px}
+.steps{display:grid;gap:12px}
+.st{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start}
+.st .n{width:34px;height:34px;border-radius:10px;background:var(--navy);color:#fff;font-family:var(--mono);font-weight:600;display:flex;align-items:center;justify-content:center;font-size:14px}
+.st h4{margin:4px 0 6px;font-size:16px}
+.st p{margin:0;color:var(--muted)}
+.tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.tool{font-size:13px;font-weight:600;border:1px solid var(--line);border-radius:8px;padding:4px 8px;background:var(--bg)}
+.tool i{font-style:normal;font-family:var(--mono);font-size:11px;margin-left:6px;color:var(--green)}
+.tool i.v{color:var(--orange)}
+.promptbox{position:relative;background:var(--code);color:var(--code-fg);border-radius:12px;padding:42px 14px 14px 14px;font-family:var(--mono);font-size:13px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;margin-top:6px}
+.copy{position:absolute;top:8px;right:8px;font:inherit;font-family:var(--body);font-weight:700;font-size:12px;border:0;border-radius:8px;padding:6px 10px;background:var(--green);color:#fff;cursor:pointer}
+.promptbox pre{margin:0;white-space:pre-wrap;font:inherit}
+.signal{background:var(--orange-t);border-radius:12px;padding:12px 14px;color:var(--ink)}
+.signal b{color:var(--orange)}
+.demo{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:center;background:var(--bg);border-radius:14px;padding:12px}
+.demo img{border-radius:10px;border:1px solid var(--line);display:block;width:100%;height:auto}
+.demo a{display:inline-block;margin-top:8px;font-weight:700;color:var(--green)}
+.lib{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}
+.card h4{margin:0 0 4px;font-size:16px}
+.card .meta{font-size:13px;color:var(--muted);margin-bottom:6px}
+.gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.gal{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.gal img{width:100%;height:auto;display:block;border-bottom:1px solid var(--line);aspect-ratio:16/10;object-fit:cover;object-position:top}
+.gal .b{padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.gal .b a{font-weight:700;color:var(--green)}
+.check{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;list-style:none;padding:0;margin:0}
+.check li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;gap:10px}
+.check li::before{content:"✓";color:var(--green);font-weight:800}
+.days{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.day{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.day b{font-family:var(--mono);color:var(--green);font-size:13px}
+.day h4{margin:4px 0 8px}
+.day ul{margin:0;padding-left:18px;color:var(--muted)}
+footer{padding-block:24px 40px;color:var(--muted);font-size:13px;border-top:1px solid var(--line)}
+@media (max-width:900px){.bench{grid-template-columns:1fr}.tracks{position:static;flex-direction:row;overflow-x:auto;padding-bottom:4px}.tracks button{min-width:200px}.ladder{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:640px){.demo,.lib,.gallery,.check,.days{grid-template-columns:1fr}.ladder{grid-template-columns:repeat(2,1fr)}}
+@media (prefers-reduced-motion:no-preference){.tracks button{transition:border-color .15s,background .15s}}
+</style>
+</head><body>
+
+<header class="top"><div class="wrap">
+  <div class="eyebrow">Стартап Академия СКОЛКОВО · модуль 2 · сборка продукта</div>
+  <h1>MVP за 3 дня: что собрать, чем и каким промптом</h1>
+  <p class="lead">Выберите свой трек — получите путь от оффера до первого сигнала: инструменты, готовый промпт, пример результата и порог, по которому решаете «идём дальше» или «меняем». Все демо ниже собраны по этим промптам за один заход.</p>
+  <nav class="jump" aria-label="Разделы"><a href="#tracks">Треки</a><a href="#prompts">Промпты</a><a href="#demos">Живые демо</a><a href="#plan">План на 3 дня</a><a href="#check">Чек-лист</a></nav>
+</div></header>
+
+<section><div class="wrap">
+  <h2>Лестница артефактов</h2>
+  <p class="sub">Поднимайтесь на ступень выше только после денег или твёрдого обязательства на текущей.</p>
+  <div class="ladder">
+    <div class="rung"><b>0</b><div>Оффер текстом</div><small>1 час</small></div>
+    <div class="rung"><b>1</b><div>Лендинг с предзаказом</div><small>3 часа</small></div>
+    <div class="rung"><b>2</b><div>Кликабельный прототип или видео</div><small>1 день</small></div>
+    <div class="rung"><b>3</b><div>Ручной сервис вместо продукта</div><small>2–3 дня</small></div>
+    <div class="rung"><b>4</b><div>Пилот на одном клиенте</div><small>1–2 недели</small></div>
+    <div class="rung"><b>5</b><div>MVP как продукт</div><small>месяцы</small></div>
+  </div>
+</div></section>
+
+<section id="tracks"><div class="wrap">
+  <h2>Ваш трек — от А до Я</h2>
+  <p class="sub">Метка <b style="color:var(--green)">РФ</b> — работает из России с российской картой. <b style="color:var(--orange)">карта/VPN</b> — нужна иностранная карта или VPN. Доступность меняется — проверяйте перед запуском.</p>
+  <div class="bench">
+    <div class="tracks" role="tablist" aria-label="Треки" id="tabs"></div>
+    <div class="sheet" id="sheet" role="tabpanel" aria-live="polite"></div>
+  </div>
+</div></section>
+
+<section id="prompts"><div class="wrap">
+  <h2>Библиотека промптов</h2>
+  <p class="sub">Вставьте в Claude, ChatGPT, Lovable или Битрикс24 VibeCode. Квадратные скобки — заменить на своё.</p>
+  <div class="lib" id="lib"></div>
+</div></section>
+
+<section id="demos"><div class="wrap">
+  <h2>Живые демо: промпт → результат</h2>
+  <p class="sub">Кликабельно. Бренды, цены и отзывы условные — это пример уровня, которого можно достичь за вечер.</p>
+  <div class="gallery">
+    <div class="gal"><img src="img/pet_trio.jpg" alt="Три экрана приложения для владельцев щенков: главная, запись, подписка" loading="lazy"><div class="b"><b>Приложение «Лапа» — B2C цифровой</b><span style="color:var(--muted)">5 экранов, переходы, выбор слота</span><a href="demo-pet.html" target="_blank" rel="noopener">Открыть прототип →</a></div></div>
+    <div class="gal"><img src="img/gum_hero.jpg" alt="Лендинг предзаказа жевательной резинки «Минтэра»" loading="lazy"><div class="b"><b>Лендинг «Минтэра» — физический продукт</b><span style="color:var(--muted)">Предзаказ, цены, форма и экран «Спасибо»</span><a href="demo-gum.html" target="_blank" rel="noopener">Открыть прототип →</a></div></div>
+    <div class="gal"><img src="img/nutra_res.jpg" alt="Квиз подбора формулы добавок «ЯСНО» с результатом" loading="lazy"><div class="b"><b>Квиз «ЯСНО» — нутрицевтики и спортпит</b><span style="color:var(--muted)">3 вопроса → формула, состав, подписка −15%</span><a href="demo-nutra.html" target="_blank" rel="noopener">Открыть прототип →</a></div></div>
+    <div class="gal"><img src="img/b2b.jpg" alt="B2B-страница с калькулятором выгоды пилота" loading="lazy"><div class="b"><b>«Поток» — B2B с калькулятором пилота</b><span style="color:var(--muted)">Клиент вводит свои цифры — видит выгоду и условия пилота</span><a href="demo-b2b.html" target="_blank" rel="noopener">Открыть прототип →</a></div></div>
+  </div>
+</div></section>
+
+<section id="plan"><div class="wrap">
+  <h2>План на 3 дня</h2>
+  <div class="days">
+    <div class="day"><b>ДЕНЬ 1</b><h4>Фокус</h4><ul><li>Гипотеза: как минимум X% из Y сделают Z</li><li>Порог успеха — до теста</li><li>Ступень лестницы и трек</li><li>Оффер одной фразой</li></ul></div>
+    <div class="day"><b>ДЕНЬ 2</b><h4>Сборка</h4><ul><li>Промпт из библиотеки → первая версия за час</li><li>Цена и кнопка на экране</li><li>Метрика и Яндекс Формы</li><li>Показ одному человеку из сегмента</li></ul></div>
+    <div class="day"><b>ДЕНЬ 3</b><h4>Деньги</h4><ul><li>Показ 10–20 людям из интервью</li><li>Просьба: оплата, депозит, пилот с датой</li><li>Сравнение с порогом</li><li>Решение: усилить, изменить, остановить</li></ul></div>
+  </div>
+</div></section>
+
+<section id="check"><div class="wrap">
+  <h2>Чек-лист перед показом клиенту</h2>
+  <ul class="check">
+    <li>Один сценарий, а не весь продукт</li><li>Обещание понятно за 5 секунд</li><li>Цена видна на экране</li><li>Есть следующий шаг: оплатить, записаться, пилот</li><li>Подключена аналитика с первого дня</li><li>Никаких реальных персональных данных и платежей без договора</li><li>Порог успеха записан до теста</li><li>Честно: «ранний доступ», а не «уже работает»</li>
+  </ul>
+</div></section>
+
+<footer><div class="wrap">Тулкит к лекции «Сборка продукта за 3 дня» · Аркадий Панин · Telegram @nepanin. Инструменты и цены меняются — проверяйте перед запуском.</div></footer>
+
+<script>
+const P={
+ app:{t:'Кликабельный прототип приложения',m:'B2C цифровой · Claude, ChatGPT, Lovable',p:`Сделай кликабельный прототип мобильного приложения для [кто: владельцы щенков и котят в первый год].
+5 экранов: 1) [главный объект: карточка питомца — имя, порода, возраст]; 2) [ключевая польза: календарь заботы — прививки, чек-ап, напоминания]; 3) [действие: запись в клинику-партнёр со свободными слотами]; 4) [деньги: подписка «Первый год» за 4 990 ₽ — что входит]; 5) оплата и подтверждение.
+Нижнее меню, переходы по кнопкам, данные-заглушки, без регистрации. Тон дружелюбный, тёплые цвета. Русский язык, мобильная версия.`},
+ landing:{t:'Лендинг предзаказа физического продукта',m:'Физический продукт · Claude, Lovable, Tilda',p:`Собери одностраничный лендинг для предзаказа нового продукта.
+Продукт: [жевательная резинка, которая работает как уход за полостью рта после еды].
+Покупатель: [работающие люди 25–40, едят вне дома]. Обещание: [«Чистые зубы после обеда — за 5 минут, без щётки»].
+Блоки: первый экран с упаковкой и кнопкой «Оформить предзаказ»; 3 причины словами клиента (цитаты из интервью); как работает в 3 шага; сравнение с [обычной жвачкой и ополаскивателем]; цены: [пачка 390 ₽, набор 990 ₽]; FAQ.
+Кнопка открывает форму (имя, телефон) и экран «Спасибо, отправка в [декабре]». Оплата — только после подтверждения отправки. Цвета [свежие, мятные]. Русский, мобильная версия.`},
+ quiz:{t:'Квиз-подбор с предзаказом',m:'Нутрицевтики, спортпит, косметика · Claude, ChatGPT',p:`Собери страницу-квиз для бренда [функциональных добавок].
+3 вопроса: цель ([фокус / энергия на тренировке / восстановление и сон]), когда нужна помощь ([утро / день / вечер]), формат ([капсулы / напиток / батончик]).
+По ответам покажи рекомендованный продукт: название, состав в мг, как принимать, цена разовой покупки и подписки со скидкой 15%, кнопка «Предзаказ».
+Внизу дисклеймер: «БАД, не является лекарственным средством». Стиль чистый, «лабораторный».`},
+ b2b:{t:'B2B-страница с калькулятором пилота',m:'B2B · Claude, ChatGPT, Gamma',p:`Собери одностраничник для B2B-сервиса [ИИ-ассистент, который отвечает на входящие заявки за 1 минуту].
+Покупатель: [руководитель отдела продаж]. Главное — калькулятор: клиент двигает ползунки [заявок в месяц, % без ответа, конверсия, средний чек] и сразу видит доп. выручку в месяц и окупаемость пилота.
+Ниже — условия пилота: [30 дней, один канал], критерий успеха [время ответа < 5 минут, +10% сделок], цена [49 000 ₽, вернём, если критерий не выполнен]. Кнопка «Обсудить пилот». Деловой тёмный стиль.`},
+ event:{t:'Страница пилотного события с предоплатой',m:'Офлайн-сервис · Claude, Tilda, Timepad',p:`Собери страницу пилотного [мероприятия / дня работы точки] для [кто].
+Что будет: [программа по часам], где и когда: [адрес, дата], сколько мест: [20].
+Цена: [1 500 ₽], ранняя цена до [дата]: [1 000 ₽]. Кнопка «Забронировать место» → форма (имя, телефон) → экран «Место за вами».
+Блок «Кому подойдёт / кому нет», 3 фото-заглушки атмосферы, FAQ про возврат. Русский, мобильная версия.`},
+ bot:{t:'ИИ-бот как MVP: системный промпт',m:'Сервис, экспертиза · GPTs, Gemini Gems, агенты YandexGPT',p:`Ты — [роль: карманный нутрициолог для офисных сотрудников].
+Задача: [за 5 вопросов собрать рацион на день под цель и бюджет].
+Данные: опирайся только на [файл с таблицей продуктов]. Если данных нет — скажи прямо.
+Формат ответа: [таблица: приём пищи — блюдо — ккал — цена]. Не больше 150 слов пояснений.
+Запрещено: [ставить диагнозы, советовать лекарства, обещать результат].
+В конце каждого ответа: «Хотите план на неделю? Это [490 ₽] — [ссылка на оплату]».`},
+ render:{t:'Рендер упаковки для физического продукта',m:'Физический продукт · Кандинский, Шедеврум, Midjourney',p:`Предметная фотография упаковки [жевательной резинки] на [светлом мятном] фоне, мягкий студийный свет, вид 3/4.
+Упаковка: [плоская коробочка], надпись «[название]», мелкие иконки [«без сахара», «ксилит»].
+Рядом лежат [две подушечки]. Минимализм, премиальная аптечная эстетика, без лишних предметов, без текста кроме названия.`}
+};
+const T=[
+ {id:'digital',n:'B2C цифровой',s:'приложение, сервис, платформа',who:'Пример: приложение для владельцев питомцев, сервис записи, обучение',
+  steps:[['Что собираем','Кликабельный прототип 3–5 экранов и лендинг с ценой и кнопкой оплаты. Ступень 1–2.'],['Чем',[['Claude / ChatGPT','собирают HTML-прототип прямо в чате'],['Lovable, Bolt, v0','карта/VPN',1],['Битрикс24 VibeCode','РФ'],['Tilda','РФ'],['ЮKassa, Т-Касса','РФ'],['Яндекс Метрика','РФ']]],['Промпт','app'],['Пример результата','pet'],['Порог сигнала','Из 20 показов людям из сегмента — 3+ нажали «Оформить» и оставили контакт или оплатили. Ниже — меняем обещание, а не дизайн.']]},
+ {id:'physical',n:'Физический продукт',s:'спортпит, косметика, одежда, техника',who:'Пример: функциональная жвачка, нутрицевтики, аксессуары. Для дорогих вещей (мотоциклы, техника) — бронь с возвратным депозитом и тест-драйв',
+  steps:[['Что собираем','Рендер и упаковка, лендинг предзаказа или квиз-подбор, 10–20 образцов из пробной партии. Ступень 1–3.'],['Чем',[['Кандинский, Шедеврум','РФ, рендеры'],['Midjourney','карта/VPN',1],['Tilda + ЮKassa','РФ, предзаказ'],['Boomstarter, Planeta.ru','РФ, краудфандинг'],['Карточка на Ozon/WB','тест спроса'],['Контрактное производство','пробная партия']]],['Промпт','landing'],['Пример результата','gum'],['Порог сигнала','Предоплата или депозит у 5%+ посетителей лендинга; из 10 образцов — 3 повторных заказа за деньги. Для дорогих вещей — 5 возвратных депозитов.']]},
+ {id:'b2b',n:'B2B',s:'сервис для бизнеса, SaaS, оборудование',who:'Пример: ИИ-ассистент для отдела продаж, учёт для производства, оборудование',
+  steps:[['Что собираем','Одностраничник с расчётом выгоды в рублях клиента, демо-сценарий и договор пилота с критериями. Ступень 2–4.'],['Чем',[['Claude / ChatGPT','калькулятор как страница'],['Gamma','one-pager'],['Яндекс Таблицы','модель выгоды'],['Битрикс24','CRM пилотов'],['Шаблон LOI','цена и дата обязательно']]],['Промпт','b2b'],['Пример результата','b2b'],['Порог сигнала','1 из 5 встреч заканчивается оплаченным пилотом или письмом о намерениях с ценой и датой. «Пришлите презентацию» — не сигнал.']]},
+ {id:'offline',n:'Офлайн-сервис',s:'точка, клуб, мероприятие, обучение',who:'Пример: кофе-корнер, бьюти-пространство, детские занятия, бар',
+  steps:[['Что собираем','Пилотное событие или точка на один день, страница с предоплатой. Ступень 1–3.'],['Чем',[['Tilda, Timepad','РФ'],['YCLIENTS','РФ, запись'],['ЮKassa','РФ'],['Яндекс Формы','РФ, анкета']]],['Промпт','event'],['Пример результата',null],['Порог сигнала','50% мест продано до события за деньги; 30% участников записались на следующее.']]},
+ {id:'expert',n:'Платформа и экспертиза',s:'маркетплейс, подбор, консалтинг, инвестиции',who:'Пример: подбор экспертов, агрегатор объектов, клуб',
+  steps:[['Что собираем','Ручной подбор вместо платформы: анкета, таблица, вы сами — «движок». Или ИИ-бот. Ступень 3.'],['Чем',[['Яндекс Формы, Таблицы','РФ'],['Salebot, BotHelp','РФ, боты'],['Агенты YandexGPT','РФ'],['GPTs, Gemini Gems','карта/VPN',1]]],['Промпт','bot'],['Пример результата',null],['Порог сигнала','5 сделок, проведённых вручную, с комиссией или оплатой. Платформу строим, когда руками уже не успеваете.']]}
+];
+const D={pet:['img/pet_trio.jpg','demo-pet.html','Приложение «Лапа»: 5 экранов'],gum:['img/gum_hero.jpg','demo-gum.html','Лендинг «Минтэра» с предзаказом'],b2b:['img/b2b.jpg','demo-b2b.html','«Поток»: калькулятор пилота']};
+const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function promptBox(k){return '<div class="promptbox"><button class="copy" type="button" data-k="'+k+'">Скопировать</button><pre>'+esc(P[k].p)+'</pre></div>';}
+function tool(t){const v=t[2]?' v':'';return '<span class="tool">'+t[0]+'<i class="'+v.trim()+'">'+t[1]+'</i></span>';}
+function render(id){
+  const t=T.find(x=>x.id===id)||T[0];
+  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.id===t.id?'true':'false'));
+  let h='<h3>'+t.n+'</h3><p class="who">'+t.who+'</p><div class="steps">';
+  t.steps.forEach((s,i)=>{let body;
+    if(s[0]==='Чем')body='<div class="tools">'+s[1].map(tool).join('')+'</div>';
+    else if(s[0]==='Промпт')body='<p>'+P[s[1]].t+'</p>'+promptBox(s[1]);
+    else if(s[0]==='Пример результата')body=s[1]?'<div class="demo"><img src="'+D[s[1]][0]+'" alt="'+D[s[1]][2]+'"><div><b>'+D[s[1]][2]+'</b><br><span style="color:var(--muted)">Собрано по промпту выше за один заход</span><br><a href="'+D[s[1]][1]+'" target="_blank" rel="noopener">Открыть кликабельный прототип →</a></div></div>':'<p>Возьмите промпт выше и замените скобки — первая версия будет через 20–40 минут.</p>';
+    else if(s[0]==='Порог сигнала')body='<div class="signal"><b>Записать до теста:</b> '+s[1]+'</div>';
+    else body='<p>'+s[1]+'</p>';
+    h+='<div class="st"><div class="n">'+String.fromCharCode(1040+i)+'</div><div><h4>'+s[0]+'</h4>'+body+'</div></div>';});
+  h+='</div>';document.getElementById('sheet').innerHTML=h;bindCopy(document.getElementById('sheet'));
+  try{localStorage.setItem('mvp-track',t.id)}catch(e){}
+}
+function bindCopy(root){root.querySelectorAll('.copy').forEach(b=>b.onclick=()=>{const txt=P[b.dataset.k].p;
+  const done=()=>{b.textContent='Скопировано';setTimeout(()=>b.textContent='Скопировать',1600)};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>sel(b))}else sel(b);});}
+function sel(b){const pre=b.parentElement.querySelector('pre');const r=document.createRange();r.selectNodeContents(pre);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Выделено — Ctrl+C';}
+document.getElementById('tabs').innerHTML=T.map(t=>'<button type="button" role="tab" data-id="'+t.id+'"><b>'+t.n+'</b><small>'+t.s+'</small></button>').join('');
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>render(b.dataset.id));
+document.getElementById('lib').innerHTML=Object.keys(P).map(k=>'<div class="card"><h4>'+P[k].t+'</h4><div class="meta">'+P[k].m+'</div>'+promptBox(k)+'</div>').join('');
+bindCopy(document.getElementById('lib'));
+let start='digital';try{start=localStorage.getItem('mvp-track')||'digital'}catch(e){}
+const hsh=(location.hash||'').slice(1);if(T.some(t=>t.id===hsh))start=hsh;
+render(start);
+</script>
+
+</body></html>

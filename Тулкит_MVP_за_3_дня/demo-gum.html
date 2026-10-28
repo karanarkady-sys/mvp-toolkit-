@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Минтэра — предзаказ</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;500;700;800&display=swap">
+<style>
+/* Демо: лендинг предзаказа физического продукта. Одна тема — мятная, фирменная */
+:root{
+  --ice:#EEF8F4; --mint:#7FD9B8; --mint-d:#2E9E7A; --deep:#0F3B36; --ink:#16302C; --muted:#5B7570; --white:#FFFFFF; --line:#CFE7DE; --warm:#FFB26B;
+  --display:"Unbounded","Manrope",system-ui,sans-serif; --body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme: light;
+}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--ice);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{padding-block:18px}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:.02em;color:var(--deep)}
+.logo span{color:var(--mint-d)}
+.tag{font-size:13px;font-weight:700;color:var(--mint-d);background:var(--white);border:1px solid var(--line);padding:6px 12px;border-radius:999px}
+.hero{padding-block:24px 56px}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,4.4vw,52px);line-height:1.08;margin:0 0 18px;color:var(--deep);text-wrap:balance}
+.lead{font-size:19px;color:var(--muted);max-width:30em;margin:0 0 26px}
+.btn{appearance:none;border:0;cursor:pointer;font:inherit;font-weight:800;font-size:17px;background:var(--deep);color:var(--white);padding:16px 26px;border-radius:14px;display:inline-flex;gap:10px;align-items:center}
+.btn:hover{background:#0b2d29}
+.btn:focus-visible{outline:3px solid var(--warm);outline-offset:3px}
+.btn.ghost{background:transparent;color:var(--deep);border:2px solid var(--deep)}
+.note{font-size:13px;color:var(--muted);margin-top:12px}
+.pack{position:relative;aspect-ratio:4/5;max-width:360px;margin-left:auto;width:100%}
+.box{position:absolute;inset:6% 10% 10% 6%;background:linear-gradient(150deg,var(--mint) 0%,#5CC8A2 55%,var(--mint-d) 100%);border-radius:28px;transform:rotate(-7deg);box-shadow:0 30px 60px -20px rgba(15,59,54,.45);padding:28px;display:flex;flex-direction:column;justify-content:space-between;color:var(--deep)}
+.box b{font-family:var(--display);font-size:34px;line-height:1}
+.box small{font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+.box .pills{display:flex;gap:8px;flex-wrap:wrap}
+.box .pills i{font-style:normal;background:rgba(255,255,255,.75);border-radius:999px;padding:5px 10px;font-size:12px;font-weight:700}
+.gum{position:absolute;width:30%;aspect-ratio:2.2/1;background:var(--white);border-radius:12px;box-shadow:0 10px 20px -8px rgba(15,59,54,.35)}
+.g1{right:0;bottom:12%;transform:rotate(12deg)}.g2{right:14%;bottom:2%;transform:rotate(-4deg)}
+section{padding-block:48px}
+h2{font-family:var(--display);font-weight:700;font-size:clamp(22px,2.6vw,30px);margin:0 0 24px;color:var(--deep);text-wrap:balance}
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.q{background:var(--white);border-radius:18px;padding:22px;border:1px solid var(--line)}
+.q p{margin:0 0 12px;font-weight:700;font-size:17px}
+.q span{font-size:13px;color:var(--muted)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;counter-reset:s}
+.step{padding:22px;border-radius:18px;background:var(--deep);color:var(--white)}
+.step::before{counter-increment:s;content:counter(s);font-family:var(--display);font-size:28px;color:var(--mint);display:block;margin-bottom:8px}
+.step p{margin:0;color:#CFE7DE}
+.cmp{width:100%;border-collapse:collapse;background:var(--white);border-radius:18px;overflow:hidden}
+.cmp th,.cmp td{padding:14px 16px;text-align:left;border-bottom:1px solid var(--line);font-size:15px}
+.cmp th{background:var(--deep);color:var(--white);font-weight:700}
+.cmp td:nth-child(2){font-weight:800;color:var(--mint-d)}
+.scroll{overflow-x:auto}
+.prices{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.price{background:var(--white);border-radius:20px;padding:26px;border:2px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.price.hot{border-color:var(--mint-d)}
+.price h3{margin:0;font-size:18px}
+.price .sum{font-family:var(--display);font-size:38px;color:var(--deep)}
+.price .sum s{font-size:18px;color:var(--muted);font-family:var(--body);margin-left:8px}
+.badge{align-self:flex-start;background:var(--warm);color:var(--deep);font-weight:800;font-size:12px;padding:4px 10px;border-radius:999px}
+details{background:var(--white);border-radius:14px;padding:16px 18px;border:1px solid var(--line);margin-bottom:10px}
+summary{cursor:pointer;font-weight:700}
+footer{padding-block:28px 40px;color:var(--muted);font-size:13px}
+.modal{position:fixed;inset:0;background:rgba(15,59,54,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
+.sheet{background:var(--white);border-radius:22px;padding:28px;max-width:420px;width:100%}
+.sheet h3{font-family:var(--display);margin:0 0 8px;color:var(--deep)}
+.sheet label{display:block;font-size:13px;font-weight:700;margin:14px 0 6px}
+.sheet input,.sheet select{width:100%;font:inherit;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line)}
+.sheet .row{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.ok{text-align:center}
+.ok .big{font-size:54px}
+@media (max-width:760px){.hero .wrap,.quotes,.steps,.prices{grid-template-columns:1fr}.pack{margin:0 auto;max-width:280px}}
+@media (prefers-reduced-motion:no-preference){.box{transition:transform .4s}.pack:hover .box{transform:rotate(-3deg)}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="logo">мин<span>тэра</span></div><div class="tag">Предзаказ · отправка в декабре</div></div></header>
+
+<div class="hero"><div class="wrap">
+  <div>
+    <h1>Чистые зубы после обеда — за 5 минут и без щётки</h1>
+    <p class="lead">Жевательная резинка с ксилитом и экстрактом чайного дерева. Для тех, кто ест вне дома и не может почистить зубы.</p>
+    <button class="btn" id="open1" type="button">Оформить предзаказ — от 390 ₽</button>
+    <div class="note">Оплата только после подтверждения отправки. Можно отменить в любой момент.</div>
+  </div>
+  <div class="pack" aria-hidden="true">
+    <div class="box"><small>после еды</small><b>мин<br>тэра</b><div class="pills"><i>ксилит</i><i>без сахара</i><i>14 подушечек</i></div></div>
+    <div class="gum g1"></div><div class="gum g2"></div>
+  </div>
+</div></div>
+
+<section><div class="wrap">
+  <h2>Почему берут — словами покупателей из интервью</h2>
+  <div class="quotes">
+    <div class="q"><p>«После обеда на встрече стесняюсь говорить близко»</p><span>Менеджер, 31 год</span></div>
+    <div class="q"><p>«Обычная жвачка только перебивает запах, а налёт остаётся»</p><span>Аналитик, 27 лет</span></div>
+    <div class="q"><p>«Щётку в офис не ношу — неудобно и негде»</p><span>Юрист, 36 лет</span></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2>Как работает</h2>
+  <div class="steps">
+    <div class="step"><p>Поели — достали одну подушечку из пачки</p></div>
+    <div class="step"><p>Жуёте 5 минут: ксилит и волокна снимают налёт</p></div>
+    <div class="step"><p>Свежее дыхание и ощущение чистых зубов до вечера</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2>Чем отличается</h2>
+  <div class="scroll"><table class="cmp">
+    <tr><th></th><th>Минтэра</th><th>Обычная жвачка</th><th>Ополаскиватель</th></tr>
+    <tr><td>Снимает налёт</td><td>Да</td><td>Нет</td><td>Частично</td></tr>
+    <tr><td>Можно в офисе и в дороге</td><td>Да</td><td>Да</td><td>Нет</td></tr>
+    <tr><td>Без сахара</td><td>Да</td><td>Не всегда</td><td>—</td></tr>
+    <tr><td>Цена за раз</td><td>~28 ₽</td><td>~5 ₽</td><td>~15 ₽</td></tr>
+  </table></div>
+</div></section>
+
+<section><div class="wrap">
+  <h2>Цены предзаказа</h2>
+  <div class="prices">
+    <div class="price"><h3>Пачка, 14 подушечек</h3><div class="sum">390 ₽</div><div>На две недели обедов</div><button class="btn ghost" type="button" data-pack="Пачка — 390 ₽">Предзаказать</button></div>
+    <div class="price hot"><span class="badge">Выгоднее на 18%</span><h3>Набор на месяц, 3 пачки</h3><div class="sum">990 ₽<s>1 170 ₽</s></div><div>Плюс футляр для сумки</div><button class="btn" type="button" data-pack="Набор на месяц — 990 ₽">Предзаказать</button></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2>Вопросы</h2>
+  <details><summary>Когда отправка?</summary><p>Первая партия — в декабре. Мы напишем за неделю и только тогда спишем оплату.</p></details>
+  <details><summary>Это заменяет чистку зубов?</summary><p>Нет. Это уход между чистками, когда щётки нет под рукой.</p></details>
+  <details><summary>Можно отменить?</summary><p>Да, в любой момент до отправки — одним сообщением.</p></details>
+</div></section>
+
+<footer><div class="wrap">Демо-прототип для Стартап Академии СКОЛКОВО. Бренд, цены и отзывы — условные, для примера.</div></footer>
+
+<div class="modal" id="modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mt">
+    <form id="form">
+      <h3 id="mt">Предзаказ</h3>
+      <div id="chosen" style="color:var(--muted)">Набор на месяц — 990 ₽</div>
+      <label for="nm">Имя</label><input id="nm" required placeholder="Анна">
+      <label for="ph">Телефон или Telegram</label><input id="ph" required placeholder="@anna или +7…">
+      <div class="row"><button class="btn" type="submit">Оставить предзаказ</button><button class="btn ghost" type="button" id="cl">Отмена</button></div>
+    </form>
+    <div class="ok" id="ok" hidden><div class="big">✓</div><h3>Спасибо!</h3><p>Вы в списке первой партии. Напишем за неделю до отправки в декабре.</p><button class="btn" type="button" id="cl2">Готово</button></div>
+  </div>
+</div>
+<script>
+const m=document.getElementById('modal'),f=document.getElementById('form'),ok=document.getElementById('ok'),ch=document.getElementById('chosen');
+function open(t){ch.textContent=t||'Набор на месяц — 990 ₽';f.hidden=false;ok.hidden=true;m.hidden=false;document.getElementById('nm').focus();}
+document.getElementById('open1').onclick=()=>open();
+document.querySelectorAll('[data-pack]').forEach(b=>b.onclick=()=>open(b.dataset.pack));
+document.getElementById('cl').onclick=document.getElementById('cl2').onclick=()=>{m.hidden=true;};
+f.addEventListener('submit',e=>{e.preventDefault();f.hidden=true;ok.hidden=false;});
+</script>
+</body>
+</html>

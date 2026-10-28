@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Лапа — прототип приложения</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap">
+<style>
+/* Демо: кликабельный прототип мобильного приложения, 5 экранов. Одна тёплая тема */
+:root{
+  --sand:#F6EFE6; --paper:#FFFDF9; --orange:#F2783C; --orange-t:#FDE3D3; --brown:#3B2A20; --muted:#8A7565; --green:#3FA56B; --green-t:#DDF2E5; --line:#EADFD2; --stage:#E9DDD0;
+  --font:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif; color-scheme:light;
+}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--stage);color:var(--brown);font-family:var(--font);min-height:100vh;display:flex;flex-direction:column;align-items:center;gap:18px;padding:24px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px))}
+.top{max-width:760px;text-align:center}
+.top h1{font-size:22px;margin:0 0 4px;font-weight:900}
+.top p{margin:0;color:var(--muted);font-size:14px}
+.stagebar{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.stagebar button{font:inherit;font-weight:800;font-size:13px;border:0;background:var(--paper);color:var(--brown);padding:8px 12px;border-radius:999px;cursor:pointer}
+.stagebar button[aria-current="true"]{background:var(--brown);color:var(--paper)}
+.phone{width:min(360px,100%);aspect-ratio:9/19;background:var(--sand);border-radius:42px;border:10px solid var(--brown);position:relative;overflow:hidden;box-shadow:0 30px 60px -25px rgba(59,42,32,.5);display:flex;flex-direction:column}
+.status{height:30px;display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-size:12px;font-weight:800}
+.scr{flex:1;overflow-y:auto;padding:6px 18px 12px}
+.scr[hidden]{display:none!important}
+h2{font-size:22px;font-weight:900;margin:8px 0 12px}
+.card{background:var(--paper);border-radius:20px;padding:16px;margin-bottom:12px;border:1px solid var(--line)}
+.pet{display:flex;gap:14px;align-items:center}
+.ava{width:68px;height:68px;border-radius:22px;background:var(--orange-t);display:flex;align-items:center;justify-content:center;font-size:34px}
+.pet b{font-size:20px;display:block}
+.pet span{color:var(--muted);font-size:14px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.chip{background:var(--sand);border-radius:999px;padding:5px 10px;font-size:12px;font-weight:800}
+.ev{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line)}
+.ev:last-child{border-bottom:0}
+.dot{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;flex:none}
+.d1{background:var(--orange-t)}.d2{background:var(--green-t)}.d3{background:#E6E2F7}
+.ev b{display:block;font-size:15px}
+.ev small{color:var(--muted)}
+.ev .when{margin-left:auto;font-weight:900;font-size:13px;white-space:nowrap}
+.cta{appearance:none;border:0;width:100%;font:inherit;font-weight:900;font-size:16px;background:var(--orange);color:#fff;padding:14px;border-radius:16px;cursor:pointer;margin-top:4px}
+.cta:focus-visible,.slot:focus-visible,.nav button:focus-visible{outline:3px solid var(--brown);outline-offset:2px}
+.cta.alt{background:var(--brown)}
+.slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.slot{font:inherit;font-weight:800;border:1.5px solid var(--line);background:var(--paper);border-radius:12px;padding:10px 0;cursor:pointer;color:var(--brown)}
+.slot[aria-pressed="true"]{background:var(--brown);color:var(--paper);border-color:var(--brown)}
+.slot:disabled{opacity:.35;cursor:not-allowed;text-decoration:line-through}
+.clinic b{display:block}.clinic small{color:var(--muted)}
+.plan{background:var(--brown);color:var(--paper);border-radius:22px;padding:18px}
+.plan .p{font-size:34px;font-weight:900;color:#FFB48A}
+.plan ul{padding-left:18px;margin:10px 0 0}
+.plan li{margin:4px 0}
+.save{background:var(--green-t);color:#1F6B42;border-radius:14px;padding:10px 12px;font-weight:800;font-size:14px;margin:12px 0}
+.ok{text-align:center;padding-top:30px}
+.ok .big{width:90px;height:90px;border-radius:30px;background:var(--green);color:#fff;font-size:48px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.nav{display:flex;justify-content:space-around;background:var(--paper);border-top:1px solid var(--line);padding:8px 0 14px}
+.nav button{font:inherit;font-size:11px;font-weight:800;border:0;background:none;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+.nav button span{font-size:20px}
+.nav button[aria-current="true"]{color:var(--orange)}
+.foot{font-size:12px;color:var(--muted);max-width:520px;text-align:center}
+</style>
+</head>
+<body>
+<div class="top"><h1>«Лапа» — первый год щенка или котёнка</h1><p>Кликабельный прототип: нажимайте кнопки внутри телефона или выберите экран сверху</p></div>
+<div class="stagebar" role="tablist" aria-label="Экраны">
+  <button data-go="s1" aria-current="true">1 Питомец</button><button data-go="s2">2 Забота</button><button data-go="s3">3 Запись</button><button data-go="s4">4 Подписка</button><button data-go="s5">5 Оплата</button>
+</div>
+<div class="phone">
+  <div class="status"><span>9:41</span><span>● ● ●</span></div>
+
+  <div class="scr" id="s1">
+    <h2>Привет, Анна!</h2>
+    <div class="card"><div class="pet"><div class="ava">🐶</div><div><b>Бублик</b><span>Корги · 3 месяца · 4,2 кг</span></div></div>
+      <div class="chips"><span class="chip">Чип есть</span><span class="chip">2 прививки из 3</span><span class="chip">Клиника «Друг»</span></div></div>
+    <div class="card"><b>Следующее важное</b><div class="ev"><div class="dot d1">💉</div><div><b>Третья прививка</b><small>Комплексная + бешенство</small></div><div class="when">через 6 дн.</div></div></div>
+    <button class="cta" data-go="s2">Открыть календарь заботы</button>
+  </div>
+
+  <div class="scr" id="s2" hidden>
+    <h2>Календарь заботы</h2>
+    <div class="card">
+      <div class="ev"><div class="dot d1">💉</div><div><b>Прививка</b><small>Нужна запись в клинику</small></div><div class="when">31 окт</div></div>
+      <div class="ev"><div class="dot d2">🛁</div><div><b>Первый груминг</b><small>Скидка 20% по подписке</small></div><div class="when">8 ноя</div></div>
+      <div class="ev"><div class="dot d3">🪱</div><div><b>Обработка от паразитов</b><small>Напомним утром</small></div><div class="when">15 ноя</div></div>
+      <div class="ev"><div class="dot d2">⚖️</div><div><b>Взвешивание</b><small>Внесите вес в дневник</small></div><div class="when">1 дек</div></div>
+    </div>
+    <button class="cta" data-go="s3">Записаться на прививку</button>
+  </div>
+
+  <div class="scr" id="s3" hidden>
+    <h2>Запись в клинику</h2>
+    <div class="card clinic"><b>Ветклиника «Друг»</b><small>ул. Садовая, 12 · 900 м · партнёр, −20%</small></div>
+    <div class="card"><b style="display:block;margin-bottom:10px">Пятница, 31 октября</b>
+      <div class="slots"><button class="slot" disabled>10:00</button><button class="slot">11:30</button><button class="slot" aria-pressed="true">13:00</button><button class="slot">15:30</button><button class="slot" disabled>17:00</button><button class="slot">18:30</button></div></div>
+    <div class="save">По подписке: 1 520 ₽ вместо 1 900 ₽</div>
+    <button class="cta" data-go="s4">Записаться на 13:00</button>
+  </div>
+
+  <div class="scr" id="s4" hidden>
+    <h2>Подписка «Первый год»</h2>
+    <div class="plan"><div class="p">4 990 ₽ <small style="font-size:14px;color:var(--paper)">в год</small></div>
+      <ul><li>Чек-ап в клинике-партнёре</li><li>−20% на приёмы и груминг</li><li>Календарь прививок и напоминания</li><li>Дневник: вес, корм, документы</li><li>Чат с ветеринаром 24/7</li></ul></div>
+    <div class="save">Окупается за 3 визита: экономия ~5 700 ₽ в год</div>
+    <button class="cta" data-go="s5">Оформить за 4 990 ₽</button>
+    <button class="cta alt" data-go="s2" style="margin-top:8px">Пока без подписки</button>
+  </div>
+
+  <div class="scr" id="s5" hidden>
+    <div class="ok"><div class="big">✓</div><h2>Готово!</h2><p>Бублик записан на 31 октября, 13:00.<br>Подписка «Первый год» активна.</p></div>
+    <div class="card"><div class="ev"><div class="dot d1">🔔</div><div><b>Напомним</b><small>за день и за 2 часа до приёма</small></div></div></div>
+    <button class="cta" data-go="s1">На главную</button>
+  </div>
+
+  <nav class="nav"><button data-go="s1" aria-current="true"><span>🏠</span>Главная</button><button data-go="s2"><span>📅</span>Забота</button><button data-go="s3"><span>🩺</span>Клиники</button><button data-go="s4"><span>⭐</span>Подписка</button></nav>
+</div>
+<div class="foot">Демо-прототип для Стартап Академии СКОЛКОВО. Бренд, клиника и цены — условные. Собран по промпту за один заход, без кода вручную.</div>
+<script>
+function go(id){document.querySelectorAll('.scr').forEach(s=>s.hidden=s.id!==id);
+  document.querySelectorAll('[data-go]').forEach(b=>{if(b.closest('.stagebar')||b.closest('.nav'))b.setAttribute('aria-current',b.dataset.go===id?'true':'false');});}
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
+document.querySelectorAll('.slot:not([disabled])').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.slot').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');document.querySelector('#s3 .cta').textContent='Записаться на '+b.textContent;}));
+</script>
+</body>
+</html>
